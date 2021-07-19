@@ -1,0 +1,116 @@
+{
+	"name": "a-star-heuristic-search",
+	"version": "0.0.0",
+	"description": "A* heuristic search",
+	"keywords": [
+		"heuristic",
+		"search"
+	],
+	"private": false,
+	"homepage": "https://github.com/tom-weatherhead/a-star-heuristic-search#readme",
+	"repository": "github:tom-weatherhead/a-star-heuristic-search",
+	"bugs": {
+		"url": "https://github.com/tom-weatherhead/a-star-heuristic-search/issues"
+	},
+	"source": "src/main.ts",
+	"// browser": "dist/a-star-heuristic-search.js",
+	"main": "dist/a-star-heuristic-search.cjs.js",
+	"module": "dist/a-star-heuristic-search.esm.js",
+	"types": "dist/types/main.d.ts",
+	"files": [
+		"dist/a-star-heuristic-search*.js",
+		"dist/types/**/*.d.ts"
+	],
+	"man": [],
+	"directories": {
+		"// lib": "lib",
+		"// bin": "",
+		"man": "",
+		"doc": "",
+		"example": "examples",
+		"test": "test"
+	},
+	"scripts": {
+		"all": "npm run rebuild && npm pack && npm run deploy",
+		"// allw": "rmdir /Q /S coverage & rmdir /Q /S lib & npm run lint & npm run build & npm test & npm pack & move /Y a-star-heuristic-search-*.tgz C:\\git\\npm-packages\\",
+		"clean-build-products": "rm -rf coverage && rm -rf dist",
+		"clean-offline": "npm run clean-build-products",
+		"clean-packages": "rm -rf node_modules && rm -f package-lock.json",
+		"clean": "npm run clean-build-products && npm run clean-packages",
+		"rebuild": "npm run clean && npm i && npm run build-and-test",
+		"// rebuild-offline": "npm run clean-build-products && npm run build-and-test",
+		"build-and-test": "npm run prettier-check && npm run lint && npm run build && npm run rollup && npm test",
+		"prettier-check": "prettier --check \"**/*.js\" \"**/*.ts\"",
+		"prettier-list": "prettier --list-different \"**/*.js\" \"**/*.ts\"",
+		"prettier-format": "prettier --write \"**/*.js\" \"**/*.ts\"",
+		"lint": "eslint . --ext .js --ext .ts",
+		"build": "tsc",
+		"rollup": "rollup --config",
+		"test": "jest --detectOpenHandles --forceExit",
+		"deploy": "eval mv $npm_package_name-$npm_package_version.tgz $(echo $npm_package_config_deploy_target_dir)/",
+		"// prepare": "npm run build",
+		"prepublishOnly": "npm test && npm run lint",
+		"preversion": "npm run lint",
+		"version": "npm run format && git add -A src",
+		"postversion": "git push && git push --tags",
+		"loc": "git ls-files | grep -v package-lock.json | tr -d '\\r' | tr '\\n' '\\0' | xargs -0 wc -l",
+		"re": "npm run prettier-format && npm run clean-build-products && npm run build-and-test && npm pack && npm run deploy",
+		"f": "npm run clean && npm i && npm run re",
+		"start": "npm run all"
+	},
+	"config": {
+		"deploy_target_dir": "$NPM_PKG_DIR"
+	},
+	"publishConfig": {},
+	"dependencies": {
+		"thaw-common-utilities.ts": "file:thaw-common-utilities.ts.tgz"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.14.6",
+		"@babel/preset-env": "^7.14.7",
+		"@babel/preset-typescript": "^7.14.5",
+		"@rollup/plugin-node-resolve": "^13.0.1",
+		"@types/eslint": "^7.28.0",
+		"@types/jest": "^26.0.24",
+		"@types/node": "^16",
+		"@typescript-eslint/eslint-plugin": "^4.28.3",
+		"@typescript-eslint/parser": "^4.28.3",
+		"@typescript-eslint/typescript-estree": "^4.28.3",
+		"eslint": "^7.30.0",
+		"jest": "^27.0.6",
+		"prettier": "^2.3.2",
+		"rollup": "^2.53.1",
+		"rollup-plugin-terser": "^7.0.2",
+		"typescript": "^4.3.5",
+		"typescript-eslint-language-service": "^4.1.4"
+	},
+	"// The correct name is bundledDependencies": true,
+	"// The name bundleDependencies is also honoured": true,
+	"// bundledDependencies": "... is an array of package names",
+	"// bundledDependencies: See": "https://docs.npmjs.com/cli/v6/configuring-npm/package-json#bundleddependencies",
+	"bundledDependencies": [],
+	"engines": {
+		"node": ">= 10"
+	},
+	"os": [
+		"darwin",
+		"linux",
+		"win32"
+	],
+	"cpu": [
+		"ia32",
+		"x64"
+	],
+	"author": "Tom Weatherhead <thaw@2hrd4u.org> (https://github.com/tom-weatherhead)",
+	"contributors": [
+		"Anonymous <conspirator@deep.state.gov>",
+		"Assimilated Captain <locutus@b.org>",
+		"Austin James <president@warehouse.serendip.com>",
+		"Autonomous Weapons Systems Unlimited <killer@robots.com>",
+		"Buddy Guy <deadbeef@decafbad.gov>",
+		"Deprecated <deadc0de@obso1337.org>",
+		"Loitering Munition <smart@bom.com>",
+		"Sgt. Pepper <shoot1st@thinkl8r.mil>"
+	],
+	"license": "MIT"
+}
