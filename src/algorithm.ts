@@ -68,7 +68,8 @@ export class AStarAlgorithm<T extends AStarStateBase>
 		const castState = state as T;
 
 		// if (typeof castState !== 'undefined' && this.openSet.contains(castState)) {
-		if (typeof castState !== 'undefined' && this.openQueue.contains(castState)) {
+		// if (typeof castState !== 'undefined' && this.openQueue.contains(castState)) {
+		if (typeof castState !== 'undefined' && this.openMap.has(castState.toString())) {
 			this.openQueue.findAndUpHeap(castState, (state1: T, state2: T) =>
 				state1.equals(state2)
 			);
