@@ -4,25 +4,25 @@
 
 // import * as engine from '..';
 
-import { AStarAlgorithm, findIndexOfStringInSortedList } from '..';
+import { AStarAlgorithm } from '..';
 
 import { EightPuzzleState, EightPuzzleSuccessorStateGenerator } from '../examples/eight-puzzle';
 
-test('findIndexOfStringInSortedList test 1', () => {
-	expect(findIndexOfStringInSortedList('a', [])).toBe(0);
-	expect(findIndexOfStringInSortedList('a', ['a'])).toBe(0);
-	expect(findIndexOfStringInSortedList('a', ['b'])).toBe(0);
-	expect(findIndexOfStringInSortedList('b', ['a'])).toBe(1);
-	expect(findIndexOfStringInSortedList('b', ['a', 'c'])).toBe(1);
-	expect(findIndexOfStringInSortedList('b', ['a', 'b', 'c'])).toBe(1);
-	expect(findIndexOfStringInSortedList('a', ['b', 'c', 'd', 'e'])).toBe(0);
-	expect(findIndexOfStringInSortedList('b', ['b', 'c', 'd', 'e'])).toBe(0);
-	expect(findIndexOfStringInSortedList('c', ['b', 'c', 'd', 'e'])).toBe(1);
-	expect(findIndexOfStringInSortedList('d', ['b', 'c', 'd', 'e'])).toBe(2);
-	expect(findIndexOfStringInSortedList('e', ['b', 'c', 'd', 'e'])).toBe(3);
-	expect(findIndexOfStringInSortedList('f', ['b', 'c', 'd', 'e'])).toBe(4);
-	// expect(findIndexOfStringInSortedList('', [])).toBe();
-});
+// test('findIndexOfStringInSortedList test 1', () => {
+// 	expect(findIndexOfStringInSortedList('a', [])).toBe(0);
+// 	expect(findIndexOfStringInSortedList('a', ['a'])).toBe(0);
+// 	expect(findIndexOfStringInSortedList('a', ['b'])).toBe(0);
+// 	expect(findIndexOfStringInSortedList('b', ['a'])).toBe(1);
+// 	expect(findIndexOfStringInSortedList('b', ['a', 'c'])).toBe(1);
+// 	expect(findIndexOfStringInSortedList('b', ['a', 'b', 'c'])).toBe(1);
+// 	expect(findIndexOfStringInSortedList('a', ['b', 'c', 'd', 'e'])).toBe(0);
+// 	expect(findIndexOfStringInSortedList('b', ['b', 'c', 'd', 'e'])).toBe(0);
+// 	expect(findIndexOfStringInSortedList('c', ['b', 'c', 'd', 'e'])).toBe(1);
+// 	expect(findIndexOfStringInSortedList('d', ['b', 'c', 'd', 'e'])).toBe(2);
+// 	expect(findIndexOfStringInSortedList('e', ['b', 'c', 'd', 'e'])).toBe(3);
+// 	expect(findIndexOfStringInSortedList('f', ['b', 'c', 'd', 'e'])).toBe(4);
+// 	// expect(findIndexOfStringInSortedList('', [])).toBe();
+// });
 
 test('Eight Puzzle test 1', () => {
 	// Arrange
