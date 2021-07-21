@@ -2,7 +2,7 @@
 
 import { PriorityQueue, Set } from 'thaw-common-utilities.ts';
 
-import { AStarStateBase, IAStarPriorityQueueRefresher } from './state-base';
+import { AStarStateBase } from './state-base';
 
 import { IAStarAlgorithmOptions } from './interfaces/ia-star-algorithm-options';
 
@@ -10,50 +10,7 @@ import { IHeuristicSearchAlgorithm } from './interfaces/iheuristic-search-algori
 
 import { ISuccessorStateGenerator } from './interfaces/isuccessor-state-generator';
 
-// export function findIndexOfStringInSortedList(str: string, sortedList: string[]): number {
-// 	// Find i such that sortedList[j] < str for all 0 <= j < i
-// 	// and (i === sortedList.length || str <= sortedList[i])
-// 	let low = 0;
-// 	let high = sortedList.length;
-// 	let count = 0;
-
-// 	while (low < high) {
-// 		const mid = Math.floor((low + high) / 2);
-
-// 		if (sortedList[mid] < str) {
-// 			low = mid + 1;
-// 		} else {
-// 			high = mid;
-// 		}
-
-// 		if (++count > 100) {
-// 			return NaN;
-// 		}
-// 	}
-
-// 	return high;
-// }
-
-// export function insertStringIntoSortedList(str: string, sortedList: string[]): void {
-// 	const i = findIndexOfStringInSortedList(str, sortedList);
-
-// 	sortedList.splice(i, 0, str);
-// }
-
-// export function sortedListContainsString(sortedList: string[], str: string): boolean {
-// 	const i = findIndexOfStringInSortedList(str, sortedList);
-
-// 	return i < sortedList.length && sortedList[i] === str;
-// }
-
-// export interface IHasSuccessors<T> {
-// 	successors: T[];
-// }
-
-// , IHasSuccessors
-export class AStarAlgorithm<T extends AStarStateBase<T>>
-	implements IHeuristicSearchAlgorithm<T>, IAStarPriorityQueueRefresher<T>
-{
+export class AStarAlgorithm<T extends AStarStateBase<T>> implements IHeuristicSearchAlgorithm<T> {
 	private readonly openQueue = new PriorityQueue<T>(
 		(item1: T, item2: T) => item1.compareTo(item2) > 0
 	);
@@ -67,13 +24,7 @@ export class AStarAlgorithm<T extends AStarStateBase<T>>
 		private readonly options: IAStarAlgorithmOptions = {}
 	) {}
 
-	public refreshPriorityQueue(state: T): void {
-		// const castState = state as T;
-
-		if (typeof state === 'undefined') {
-			return;
-		}
-
+	private refreshPriorityQueue(state: T): void {
 		if (
 			this.options.useStringStates
 				? this.openMap.has(state.toString())
@@ -100,16 +51,15 @@ export class AStarAlgorithm<T extends AStarStateBase<T>>
 		return this.findState(iterable, state);
 	}
 
-	private traverseAndOptimizeCosts(
+	private propagateImprovedCosts(
 		state: T,
 		prospectiveParent: T,
 		costFromProspectiveParent: number,
-		// refresher: IAStarPriorityQueueRefresher | undefined
 		refreshPriorityQueue: boolean
 	): void {
 		const gProspective = prospectiveParent.g + costFromProspectiveParent;
 
-		// Return if the prospective cost is not better (i.e. lower).
+		// Return if the prospective cost is not better (i.e. is not lower).
 
 		if (gProspective >= state.g) {
 			return;
@@ -124,12 +74,7 @@ export class AStarAlgorithm<T extends AStarStateBase<T>>
 		}
 
 		for (const successor of state.successors) {
-			this.traverseAndOptimizeCosts(
-				successor, // successorData[0],
-				state,
-				successor.nodeCost, // successorData[1],
-				refreshPriorityQueue
-			);
+			this.propagateImprovedCosts(successor, state, successor.nodeCost, refreshPriorityQueue);
 		}
 	}
 
@@ -169,7 +114,7 @@ export class AStarAlgorithm<T extends AStarStateBase<T>>
 
 			const possibleSuccessors = this.successorStateGenerator.generateSuccessorStates(
 				currentState,
-				startState,
+				// startState,
 				goalState
 			);
 
@@ -177,12 +122,11 @@ export class AStarAlgorithm<T extends AStarStateBase<T>>
 				const newStateInOpenList = this.findStateInList(newState, true);
 
 				if (typeof newStateInOpenList !== 'undefined') {
-					// currentState.successors.push([newStateInOpenList, newStateCost]);
 					currentState.successors.push(newStateInOpenList);
-					this.traverseAndOptimizeCosts(
+					this.propagateImprovedCosts(
 						newStateInOpenList,
 						currentState,
-						newStateInOpenList.nodeCost, // newStateCost,
+						newStateInOpenList.nodeCost,
 						true
 					);
 
@@ -192,16 +136,15 @@ export class AStarAlgorithm<T extends AStarStateBase<T>>
 				const newStateInClosedList = this.findStateInList(newState, false);
 
 				if (typeof newStateInClosedList !== 'undefined') {
-					// currentState.successors.push([newStateInClosedList, newStateCost]);
 					currentState.successors.push(newStateInClosedList);
-					this.traverseAndOptimizeCosts(
+					this.propagateImprovedCosts(
 						newStateInClosedList,
 						currentState,
-						newStateInClosedList.nodeCost, // newStateCost,
+						newStateInClosedList.nodeCost,
 						true
 					);
 				} else {
-					this.traverseAndOptimizeCosts(newState, currentState, newState.nodeCost, false);
+					this.propagateImprovedCosts(newState, currentState, newState.nodeCost, false);
 					this.openQueue.enqueue(newState);
 					// this.openSet.add(newState);
 
@@ -209,7 +152,6 @@ export class AStarAlgorithm<T extends AStarStateBase<T>>
 						this.openMap.set(newState.toString(), newState);
 					}
 
-					// currentState.successors.push([newState, newStateCost]);
 					currentState.successors.push(newState);
 				}
 				// #else

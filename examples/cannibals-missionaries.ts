@@ -125,7 +125,7 @@ export class CanMissSuccessorStateGenerator implements ISuccessorStateGenerator<
 	public generateSuccessorStates(
 		currentState: CanMissState,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		startState: CanMissState,
+		// startState: CanMissState,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		goalState: CanMissState
 	): CanMissState[] {

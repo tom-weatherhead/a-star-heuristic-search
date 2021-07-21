@@ -73,7 +73,7 @@ export class DecanterSuccessorStateGenerator implements ISuccessorStateGenerator
 	public generateSuccessorStates(
 		currentState: DecanterState,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		startState: DecanterState,
+		// startState: DecanterState,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		goalState: DecanterState
 	): DecanterState[] {

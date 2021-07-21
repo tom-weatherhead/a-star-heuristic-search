@@ -146,7 +146,7 @@ export class EightPuzzleSuccessorStateGenerator
 
 	public generateSuccessorStates(
 		currentState: EightPuzzleState,
-		startState: EightPuzzleState,
+		// startState: EightPuzzleState,
 		goalState: EightPuzzleState
 	): EightPuzzleState[] {
 		const result: EightPuzzleState[] = [];
