@@ -2,7 +2,7 @@
 
 import { generateRange, shuffle } from 'thaw-common-utilities.ts';
 
-import { AStarStateBase, EvaluatedStateType, ISuccessorStateGenerator } from '..';
+import { AStarStateBase, ISuccessorStateGenerator } from '..';
 
 const puzzleWidth = 3;
 const puzzleHeight = 3;
@@ -44,16 +44,17 @@ export class EightPuzzleState extends AStarStateBase {
 
 	public readonly tiles: number[];
 	public readonly tilesString: string;
-	public _successors: EvaluatedStateType<AStarStateBase>[] = [];
+	public _successors: AStarStateBase[] = [];
 
 	constructor(
 		t: number[],
 		previousState: EightPuzzleState,
 		newStep: string,
-		gParam: number,
+		nodeCost: number,
+		// gParam: number,
 		hParam: number
 	) {
-		super(previousState, newStep, gParam, hParam);
+		super(previousState, newStep, nodeCost, hParam);
 
 		if (typeof t === 'undefined') {
 			throw new Error('EightPuzzleState constructor: t is undefined.');
@@ -87,7 +88,7 @@ export class EightPuzzleState extends AStarStateBase {
 		);
 	}
 
-	public get successors(): EvaluatedStateType<AStarStateBase>[] {
+	public get successors(): AStarStateBase[] {
 		return this._successors;
 	}
 }
@@ -147,8 +148,8 @@ export class EightPuzzleSuccessorStateGenerator
 		currentState: EightPuzzleState,
 		startState: EightPuzzleState,
 		goalState: EightPuzzleState
-	): EvaluatedStateType<EightPuzzleState>[] {
-		const result: EvaluatedStateType<EightPuzzleState>[] = [];
+	): EightPuzzleState[] {
+		const result: EightPuzzleState[] = [];
 
 		// Calculate the row and column of the zero tile.
 		const indexOfZero = currentState.tiles.indexOf(0);
@@ -292,11 +293,12 @@ export class EightPuzzleSuccessorStateGenerator
 				newTiles,
 				currentState,
 				newStep,
-				currentState.g + cost,
+				cost, // currentState.g + cost,
 				h
 			);
 
-			result.push([newState, cost]);
+			// result.push([newState, cost]);
+			result.push(newState);
 		}
 
 		return result;

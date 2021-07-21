@@ -4,8 +4,15 @@
 // If, at any time, on either side of the river there is at least one missionary and the cannibals outnumber the missionaries,
 // Then the cannibals eat the missionaries, and the state is invalid.
 
-import { AStarStateBase, EvaluatedStateType, ISuccessorStateGenerator } from '..';
+import { AStarStateBase, ISuccessorStateGenerator } from '..';
 
+// TODO?:
+
+// export interface IHasSuccessors<T> {
+// 	successors: T[];
+// }
+
+// export class CanMissState extends AStarStateBase implements IHasSuccessors<CanMissState> {
 export class CanMissState extends AStarStateBase {
 	public static create(
 		canoeWest: boolean,
@@ -27,7 +34,7 @@ export class CanMissState extends AStarStateBase {
 	public readonly numCannibalsOnEastSide: number;
 	public readonly numMissionariesOnEastSide: number;
 	private readonly stateAsString: string;
-	public _successors: EvaluatedStateType<AStarStateBase>[] = [];
+	public _successors: AStarStateBase[] = [];
 
 	constructor(
 		canoeWest: boolean,
@@ -37,10 +44,11 @@ export class CanMissState extends AStarStateBase {
 		me: number,
 		previousState: CanMissState,
 		newStep: string,
-		gParam: number,
+		nodeCost: number,
+		// gParam: number,
 		hParam: number
 	) {
-		super(previousState, newStep, gParam, hParam);
+		super(previousState, newStep, nodeCost, hParam);
 		this.canoeIsOnWestSide = canoeWest;
 		this.numCannibalsOnWestSide = cw;
 		this.numMissionariesOnWestSide = mw;
@@ -124,8 +132,8 @@ export class CanMissSuccessorStateGenerator implements ISuccessorStateGenerator<
 		startState: CanMissState,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		goalState: CanMissState
-	): Iterable<EvaluatedStateType<CanMissState>> {
-		const result: EvaluatedStateType<CanMissState>[] = [];
+	): CanMissState[] {
+		const result: CanMissState[] = [];
 
 		for (let i = 0; i < 5; ++i) {
 			const numCannibalsOnSide = currentState.canoeIsOnWestSide
@@ -224,12 +232,14 @@ export class CanMissSuccessorStateGenerator implements ISuccessorStateGenerator<
 				new_me,
 				currentState,
 				newStep,
-				currentState.g + 1,
+				1,
+				// currentState.g + 1,
 				new_cw + new_mw // h is the number of people on the west side of the river.
 			);
 
 			if (newState.isValid()) {
-				result.push([newState, 1]);
+				// result.push([newState, 1]);
+				result.push(newState);
 				console.log(`+++ Valid new state: ${newState}`);
 				console.log(newStep);
 				console.log('newState has canoe on west side:', newState.canoeIsOnWestSide);

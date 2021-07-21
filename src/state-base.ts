@@ -6,7 +6,7 @@ import { IComparable, IEqualityComparable } from 'thaw-common-utilities.ts';
 
 // EvaluatedStateType replaces C#'s KeyValuePair<AStarStateBase, int>
 // The number in the following line is the cost of going from the current state to the corresponding successor state.
-export type EvaluatedStateType<T extends AStarStateBase> = [T, number];
+// export type EvaluatedStateType<T extends AStarStateBase> = [T, number];
 
 export interface IAStarPriorityQueueRefresher {
 	refreshPriorityQueue(state: AStarStateBase): void;
@@ -30,22 +30,25 @@ export interface IAStarPriorityQueueRefresher {
 // Or: export abstract class AStarStateBase<T extends IAStarState> implements IComparable<AStarStateBase>, IEqualityComparable {
 // where T is the concrete statae type (e.g. DecanterState)
 export abstract class AStarStateBase implements IComparable<AStarStateBase>, IEqualityComparable {
-	public parent: AStarStateBase | undefined;
-	public readonly solutionStep: string;
+	// public parent: AStarStateBase | undefined;
+	// public readonly solutionStep: string;
+	// public readonly nodeCost: number; // The cost of going from the parent state to this state.
 	public f: number; // g + h
 	public g: number; // The actual cost to go from the start state to this state.
-	private readonly h: number; // The estimated cost to go from this state to the goal state.
+	// public readonly h: number; // The estimated cost to go from this state to the goal state.
 
 	constructor(
-		previousState: AStarStateBase | undefined,
-		newStep: string,
-		gParam: number,
-		hParam: number
+		public parent: AStarStateBase | undefined,
+		public readonly solutionStep: string,
+		public readonly nodeCost: number,
+		// public g: number,
+		public readonly h: number
 	) {
-		this.parent = previousState;
-		this.solutionStep = newStep;
-		this.g = gParam;
-		this.h = hParam;
+		// this.parent = previousState;
+		// this.solutionStep = newStep;
+		// this.g = gParam;
+		this.g = this.nodeCost + (typeof parent !== 'undefined' ? parent.g : 0);
+		// this.h = hParam;
 		this.f = this.g + this.h;
 	}
 
@@ -55,34 +58,11 @@ export abstract class AStarStateBase implements IComparable<AStarStateBase>, IEq
 
 	public abstract equals(other: unknown): boolean;
 
-	public abstract get successors(): EvaluatedStateType<AStarStateBase>[];
+	// public abstract get successors(): EvaluatedStateType<AStarStateBase>[];
+	public abstract get successors(): AStarStateBase[];
 
 	public compareTo(otherState: AStarStateBase): number {
 		return otherState.f - this.f; // The state with the smaller f has the higher priority.
-	}
-
-	public traverseAndOptimizeCosts(
-		prospectiveParent: AStarStateBase,
-		costFromProspectiveParent: number,
-		refresher: IAStarPriorityQueueRefresher | undefined
-	): void {
-		const gProspective = prospectiveParent.g + costFromProspectiveParent;
-
-		if (gProspective >= this.g) {
-			return;
-		}
-
-		this.parent = prospectiveParent;
-		this.g = gProspective;
-		this.f = this.g + this.h;
-
-		if (typeof refresher !== 'undefined') {
-			refresher.refreshPriorityQueue(this);
-		}
-
-		for (const successorData of this.successors) {
-			successorData[0].traverseAndOptimizeCosts(this, successorData[1], refresher);
-		}
 	}
 
 	public addSolutionStep(solutionSteps: string[]): void {

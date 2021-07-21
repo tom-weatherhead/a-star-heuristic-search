@@ -2,7 +2,7 @@
 
 import { zeroPadNumber } from 'thaw-common-utilities.ts';
 
-import { AStarStateBase, EvaluatedStateType, ISuccessorStateGenerator } from '..';
+import { AStarStateBase, ISuccessorStateGenerator } from '..';
 
 export class DecanterState extends AStarStateBase {
 	public static create(v1: number, v2: number): DecanterState {
@@ -12,17 +12,18 @@ export class DecanterState extends AStarStateBase {
 	public readonly volume1: number;
 	public readonly volume2: number;
 	private readonly stateAsString: string;
-	public _successors: EvaluatedStateType<AStarStateBase>[] = [];
+	public _successors: AStarStateBase[] = [];
 
 	constructor(
 		v1: number,
 		v2: number,
 		previousState: DecanterState | undefined,
 		newStep: string,
-		gParam: number,
+		nodeCost: number,
+		// gParam: number,
 		hParam: number
 	) {
-		super(previousState, newStep, gParam, hParam);
+		super(previousState, newStep, nodeCost, hParam);
 
 		this.volume1 = v1;
 		this.volume2 = v2;
@@ -48,7 +49,7 @@ export class DecanterState extends AStarStateBase {
 		);
 	}
 
-	public get successors(): EvaluatedStateType<AStarStateBase>[] {
+	public get successors(): AStarStateBase[] {
 		return this._successors;
 	}
 }
@@ -75,8 +76,8 @@ export class DecanterSuccessorStateGenerator implements ISuccessorStateGenerator
 		startState: DecanterState,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		goalState: DecanterState
-	): EvaluatedStateType<DecanterState>[] {
-		const result: EvaluatedStateType<DecanterState>[] = [];
+	): DecanterState[] {
+		const result: DecanterState[] = [];
 
 		for (let i = 0; i < 6; i++) {
 			let nVolume1 = currentState.volume1;
@@ -125,16 +126,17 @@ export class DecanterSuccessorStateGenerator implements ISuccessorStateGenerator
 
 			StepDescription = StepDescription + ` (${nVolume1}, ${nVolume2})`;
 
-			const NewState = new DecanterState(
+			const newState = new DecanterState(
 				nVolume1,
 				nVolume2,
 				currentState,
 				StepDescription,
-				currentState.g + 1,
+				1, // currentState.g + 1,
 				0 // The value for the heuristic h is always zero. (?!)
 			);
 
-			result.push([NewState, 1]);
+			// result.push([newState, 1]);
+			result.push(newState);
 		}
 
 		return result;

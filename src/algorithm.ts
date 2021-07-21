@@ -60,15 +60,11 @@ export class AStarAlgorithm<T extends AStarStateBase>
 	constructor(
 		private readonly successorStateGenerator: ISuccessorStateGenerator<T>,
 		private readonly options: IAStarAlgorithmOptions = {}
-	) {
-		// this.successorStateGenerator = successorStateGenerator;
-	}
+	) {}
 
 	public refreshPriorityQueue(state: AStarStateBase): void {
 		const castState = state as T;
 
-		// if (typeof castState !== 'undefined' && this.openSet.contains(castState)) {
-		// if (typeof castState !== 'undefined' && this.openQueue.contains(castState)) {
 		if (typeof castState === 'undefined') {
 			return;
 		}
@@ -93,6 +89,39 @@ export class AStarAlgorithm<T extends AStarStateBase>
 		}
 
 		return this.findState(iterable, state);
+	}
+
+	private traverseAndOptimizeCosts(
+		state: AStarStateBase,
+		prospectiveParent: AStarStateBase,
+		costFromProspectiveParent: number,
+		// refresher: IAStarPriorityQueueRefresher | undefined
+		refreshPriorityQueue: boolean
+	): void {
+		const gProspective = prospectiveParent.g + costFromProspectiveParent;
+
+		// Return if the prospective cost is not better (i.e. lower).
+
+		if (gProspective >= state.g) {
+			return;
+		}
+
+		state.parent = prospectiveParent;
+		state.g = gProspective;
+		state.f = state.g + state.h;
+
+		if (refreshPriorityQueue) {
+			this.refreshPriorityQueue(state);
+		}
+
+		for (const successor of state.successors) {
+			this.traverseAndOptimizeCosts(
+				successor, // successorData[0],
+				state,
+				successor.nodeCost, // successorData[1],
+				refreshPriorityQueue
+			);
+		}
 	}
 
 	public search(startState: T, goalState: T): T | undefined {
@@ -129,18 +158,24 @@ export class AStarAlgorithm<T extends AStarStateBase>
 				return currentState;
 			}
 
-			const possibleSuccessorStateData = this.successorStateGenerator.generateSuccessorStates(
+			const possibleSuccessors = this.successorStateGenerator.generateSuccessorStates(
 				currentState,
 				startState,
 				goalState
 			);
 
-			for (const [newState, newStateCost] of possibleSuccessorStateData) {
+			for (const newState of possibleSuccessors) {
 				const newStateInOpenList = this.findStateInList(newState, true);
 
 				if (typeof newStateInOpenList !== 'undefined') {
-					currentState.successors.push([newStateInOpenList, newStateCost]);
-					newStateInOpenList.traverseAndOptimizeCosts(currentState, newStateCost, this);
+					// currentState.successors.push([newStateInOpenList, newStateCost]);
+					currentState.successors.push(newStateInOpenList);
+					this.traverseAndOptimizeCosts(
+						newStateInOpenList,
+						currentState,
+						newStateInOpenList.nodeCost, // newStateCost,
+						true
+					);
 
 					continue;
 				}
@@ -148,10 +183,16 @@ export class AStarAlgorithm<T extends AStarStateBase>
 				const newStateInClosedList = this.findStateInList(newState, false);
 
 				if (typeof newStateInClosedList !== 'undefined') {
-					currentState.successors.push([newStateInClosedList, newStateCost]);
-					newStateInClosedList.traverseAndOptimizeCosts(currentState, newStateCost, this);
+					// currentState.successors.push([newStateInClosedList, newStateCost]);
+					currentState.successors.push(newStateInClosedList);
+					this.traverseAndOptimizeCosts(
+						newStateInClosedList,
+						currentState,
+						newStateInClosedList.nodeCost, // newStateCost,
+						true
+					);
 				} else {
-					newState.traverseAndOptimizeCosts(currentState, newStateCost, undefined);
+					this.traverseAndOptimizeCosts(newState, currentState, newState.nodeCost, false);
 					this.openQueue.enqueue(newState);
 					// this.openSet.add(newState);
 
@@ -159,7 +200,8 @@ export class AStarAlgorithm<T extends AStarStateBase>
 						this.openMap.set(newState.toString(), newState);
 					}
 
-					currentState.successors.push([newState, newStateCost]);
+					// currentState.successors.push([newState, newStateCost]);
+					currentState.successors.push(newState);
 				}
 				// #else
 				// if (!openQueue.Contains(state) && !closedSet.Contains(state)) {
