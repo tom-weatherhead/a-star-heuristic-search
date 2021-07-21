@@ -2,7 +2,13 @@
 
 import { PriorityQueue, Set } from 'thaw-common-utilities.ts';
 
-import { AStarStateBase, EvaluatedStateType, IAStarPriorityQueueRefresher } from './state-base';
+import { AStarStateBase, IAStarPriorityQueueRefresher } from './state-base';
+
+import { IAStarAlgorithmOptions } from './interfaces/ia-star-algorithm-options';
+
+import { IHeuristicSearchAlgorithm } from './interfaces/iheuristic-search-algorithm';
+
+import { ISuccessorStateGenerator } from './interfaces/isuccessor-state-generator';
 
 // export function findIndexOfStringInSortedList(str: string, sortedList: string[]): number {
 // 	// Find i such that sortedList[j] < str for all 0 <= j < i
@@ -38,32 +44,6 @@ import { AStarStateBase, EvaluatedStateType, IAStarPriorityQueueRefresher } from
 // 	const i = findIndexOfStringInSortedList(str, sortedList);
 
 // 	return i < sortedList.length && sortedList[i] === str;
-// }
-
-export interface ISuccessorStateGenerator<T extends AStarStateBase> {
-	stateValidityTest(state: T): void; // This will throw an exception if the given state is invalid.
-	generateSuccessorStates(
-		currentState: T,
-		startState: T,
-		goalState: T
-	): Iterable<EvaluatedStateType<T>>; // TODO: If possible, do not pass the start state.
-}
-
-export interface IAStarAlgorithmOptions {
-	useStringStates?: boolean;
-}
-
-export interface IHeuristicSearchAlgorithm<T extends AStarStateBase> {
-	search(startState: T, goalState: T): T | undefined;
-	searchAndReport(startState: T, goalState: T): string[] | undefined;
-	numStatesGenerated: number;
-	numStatesExamined: number;
-}
-
-// export class HeuristicSearchStateException extends Error {
-// 	constructor(message: string) {
-// 		super(message);
-// 	}
 // }
 
 export class AStarAlgorithm<T extends AStarStateBase>
