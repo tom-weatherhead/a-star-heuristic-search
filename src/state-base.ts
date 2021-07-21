@@ -2,11 +2,11 @@
 
 import { IComparable, IEqualityComparable } from 'thaw-common-utilities.ts';
 
+// T is the type of the problem domain's state information.
+
 // EvaluatedStateType replaces C#'s KeyValuePair<AStarStateBase, int>
 // The number in the following line is the cost of going from the current state to the corresponding successor state.
 export type EvaluatedStateType<T extends AStarStateBase> = [T, number];
-
-// T is the type of the problem domain's state information.
 
 export interface IAStarPriorityQueueRefresher {
 	refreshPriorityQueue(state: AStarStateBase): void;

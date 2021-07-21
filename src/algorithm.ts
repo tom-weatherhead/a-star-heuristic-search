@@ -40,10 +40,6 @@ import { AStarStateBase, EvaluatedStateType, IAStarPriorityQueueRefresher } from
 // 	return i < sortedList.length && sortedList[i] === str;
 // }
 
-export interface AStarAlgorithmOptions {
-	useStringStates?: boolean;
-}
-
 export interface ISuccessorStateGenerator<T extends AStarStateBase> {
 	stateValidityTest(state: T): void; // This will throw an exception if the given state is invalid.
 	generateSuccessorStates(
@@ -53,6 +49,10 @@ export interface ISuccessorStateGenerator<T extends AStarStateBase> {
 	): Iterable<EvaluatedStateType<T>>; // TODO: If possible, do not pass the start state.
 }
 
+export interface IAStarAlgorithmOptions {
+	useStringStates?: boolean;
+}
+
 export interface IHeuristicSearchAlgorithm<T extends AStarStateBase> {
 	search(startState: T, goalState: T): T | undefined;
 	searchAndReport(startState: T, goalState: T): string[] | undefined;
@@ -60,11 +60,11 @@ export interface IHeuristicSearchAlgorithm<T extends AStarStateBase> {
 	numStatesExamined: number;
 }
 
-export class HeuristicSearchStateException extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-}
+// export class HeuristicSearchStateException extends Error {
+// 	constructor(message: string) {
+// 		super(message);
+// 	}
+// }
 
 export class AStarAlgorithm<T extends AStarStateBase>
 	implements IHeuristicSearchAlgorithm<T>, IAStarPriorityQueueRefresher
@@ -73,16 +73,14 @@ export class AStarAlgorithm<T extends AStarStateBase>
 		(item1: T, item2: T) => item1.compareTo(item2) > 0
 	);
 	private readonly openSet = new Set<T>(); // Used to speed up the refreshing of the Open Queue
-	// private openSetStrings: string[] = [];
 	private readonly openMap = new Map<string, T>();
 	private readonly closedSet = new Set<T>();
-	// private closedSetStrings: string[] = [];
 	private readonly closedMap = new Map<string, T>();
 	private readonly successorStateGenerator: ISuccessorStateGenerator<T>;
 
 	constructor(
 		successorStateGenerator: ISuccessorStateGenerator<T>,
-		private readonly options: AStarAlgorithmOptions = {}
+		private readonly options: IAStarAlgorithmOptions = {}
 	) {
 		this.successorStateGenerator = successorStateGenerator;
 	}
@@ -114,17 +112,14 @@ export class AStarAlgorithm<T extends AStarStateBase>
 
 		this.openQueue.clear();
 		this.openSet.clear();
-		// this.openSetStrings = [];
 		this.openMap.clear();
 		this.closedSet.clear();
-		// this.closedSetStrings = [];
 		this.closedMap.clear();
 
 		this.openQueue.enqueue(startState);
 		this.openSet.add(startState);
 
 		if (this.options.useStringStates) {
-			// insertStringIntoSortedList(startState.toString(), this.openSetStrings);
 			this.openMap.set(startState.toString(), startState);
 		}
 
@@ -138,7 +133,6 @@ export class AStarAlgorithm<T extends AStarStateBase>
 			this.closedSet.add(currentState);
 
 			if (this.options.useStringStates) {
-				// insertStringIntoSortedList(currentState.toString(), this.closedSetStrings);
 				this.closedMap.set(currentState.toString(), currentState);
 			}
 
@@ -173,7 +167,6 @@ export class AStarAlgorithm<T extends AStarStateBase>
 					this.openSet.add(newState);
 
 					if (this.options.useStringStates) {
-						// insertStringIntoSortedList(newState.toString(), this.openSetStrings);
 						this.openMap.set(newState.toString(), newState);
 					}
 
@@ -207,7 +200,9 @@ export class AStarAlgorithm<T extends AStarStateBase>
 	public report(solutionState: T | undefined): string[] | undefined {
 		if (typeof solutionState === 'undefined') {
 			console.log('No solution found.');
-			console.log(`${this.numStatesGenerated} state(s) generated and examined.`);
+			console.log(
+				`${this.numStatesGenerated} state(s) generated; ${this.numStatesExamined} state(s) examined.`
+			);
 
 			return undefined;
 		}
