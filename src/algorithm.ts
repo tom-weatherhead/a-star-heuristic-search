@@ -46,8 +46,13 @@ import { ISuccessorStateGenerator } from './interfaces/isuccessor-state-generato
 // 	return i < sortedList.length && sortedList[i] === str;
 // }
 
-export class AStarAlgorithm<T extends AStarStateBase>
-	implements IHeuristicSearchAlgorithm<T>, IAStarPriorityQueueRefresher
+// export interface IHasSuccessors<T> {
+// 	successors: T[];
+// }
+
+// , IHasSuccessors
+export class AStarAlgorithm<T extends AStarStateBase<T>>
+	implements IHeuristicSearchAlgorithm<T>, IAStarPriorityQueueRefresher<T>
 {
 	private readonly openQueue = new PriorityQueue<T>(
 		(item1: T, item2: T) => item1.compareTo(item2) > 0
@@ -62,22 +67,26 @@ export class AStarAlgorithm<T extends AStarStateBase>
 		private readonly options: IAStarAlgorithmOptions = {}
 	) {}
 
-	public refreshPriorityQueue(state: AStarStateBase): void {
-		const castState = state as T;
+	public refreshPriorityQueue(state: T): void {
+		// const castState = state as T;
 
-		if (typeof castState === 'undefined') {
+		if (typeof state === 'undefined') {
 			return;
 		}
 
 		if (
 			this.options.useStringStates
-				? this.openMap.has(castState.toString())
-				: this.openQueue.contains(castState)
+				? this.openMap.has(state.toString())
+				: this.openQueue.contains(state)
 		) {
-			this.openQueue.findAndUpHeap(castState, (state1: T, state2: T) =>
-				state1.equals(state2)
-			);
+			this.openQueue.findAndUpHeap(state, (state1: T, state2: T) => state1.equals(state2));
 		}
+
+		// TODO: (if this.options.useStringStates)
+
+		// const stateAsString = state.toString();
+
+		// this.openQueue.findAndUpHeap((state2: T) => state2.toString() === stateAsString);
 	}
 
 	private findStateInList(state: T, isOpenList: boolean): T | undefined {
@@ -92,8 +101,8 @@ export class AStarAlgorithm<T extends AStarStateBase>
 	}
 
 	private traverseAndOptimizeCosts(
-		state: AStarStateBase,
-		prospectiveParent: AStarStateBase,
+		state: T,
+		prospectiveParent: T,
 		costFromProspectiveParent: number,
 		// refresher: IAStarPriorityQueueRefresher | undefined
 		refreshPriorityQueue: boolean

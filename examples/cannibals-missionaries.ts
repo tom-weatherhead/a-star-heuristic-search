@@ -8,12 +8,8 @@ import { AStarStateBase, ISuccessorStateGenerator } from '..';
 
 // TODO?:
 
-// export interface IHasSuccessors<T> {
-// 	successors: T[];
-// }
-
 // export class CanMissState extends AStarStateBase implements IHasSuccessors<CanMissState> {
-export class CanMissState extends AStarStateBase {
+export class CanMissState extends AStarStateBase<CanMissState> {
 	public static create(
 		canoeWest: boolean,
 		cw: number,
@@ -112,7 +108,7 @@ export class CanMissState extends AStarStateBase {
 		);
 	}
 
-	public get successors(): EvaluatedStateType<AStarStateBase>[] {
+	public get successors(): AStarStateBase[] {
 		return this._successors;
 	}
 }

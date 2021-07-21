@@ -8,8 +8,8 @@ import { IComparable, IEqualityComparable } from 'thaw-common-utilities.ts';
 // The number in the following line is the cost of going from the current state to the corresponding successor state.
 // export type EvaluatedStateType<T extends AStarStateBase> = [T, number];
 
-export interface IAStarPriorityQueueRefresher {
-	refreshPriorityQueue(state: AStarStateBase): void;
+export interface IAStarPriorityQueueRefresher<T extends AStarStateBase<T>> {
+	refreshPriorityQueue(state: T): void;
 	// Or: refreshPriorityQueue(state: IAStarState): void;
 }
 
@@ -29,7 +29,10 @@ export interface IAStarPriorityQueueRefresher {
 // Or: export abstract class AStarStateBase<T extends AStarStateBase> implements IComparable<AStarStateBase>, IEqualityComparable {
 // Or: export abstract class AStarStateBase<T extends IAStarState> implements IComparable<AStarStateBase>, IEqualityComparable {
 // where T is the concrete statae type (e.g. DecanterState)
-export abstract class AStarStateBase implements IComparable<AStarStateBase>, IEqualityComparable {
+// export abstract class AStarStateBase implements IComparable<AStarStateBase>, IEqualityComparable {
+export abstract class AStarStateBase<T extends AStarStateBase<T>>
+	implements IComparable<T>, IEqualityComparable
+{
 	// public parent: AStarStateBase | undefined;
 	// public readonly solutionStep: string;
 	// public readonly nodeCost: number; // The cost of going from the parent state to this state.
@@ -38,7 +41,7 @@ export abstract class AStarStateBase implements IComparable<AStarStateBase>, IEq
 	// public readonly h: number; // The estimated cost to go from this state to the goal state.
 
 	constructor(
-		public parent: AStarStateBase | undefined,
+		public parent: T | undefined,
 		public readonly solutionStep: string,
 		public readonly nodeCost: number,
 		// public g: number,
@@ -58,10 +61,9 @@ export abstract class AStarStateBase implements IComparable<AStarStateBase>, IEq
 
 	public abstract equals(other: unknown): boolean;
 
-	// public abstract get successors(): EvaluatedStateType<AStarStateBase>[];
-	public abstract get successors(): AStarStateBase[];
+	public abstract get successors(): T[];
 
-	public compareTo(otherState: AStarStateBase): number {
+	public compareTo(otherState: T): number {
 		return otherState.f - this.f; // The state with the smaller f has the higher priority.
 	}
 

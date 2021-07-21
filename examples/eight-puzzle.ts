@@ -29,7 +29,7 @@ const nextInCycle = [1, 2, 5, 0, 4, 8, 3, 6, 7];
 // This should make it much faster to search for newly created states in
 // the open and closed lists.
 
-export class EightPuzzleState extends AStarStateBase {
+export class EightPuzzleState extends AStarStateBase<EightPuzzleState> {
 	public static create(t: number[]): EightPuzzleState {
 		return new EightPuzzleState(t, undefined, '', 0, 0);
 	}

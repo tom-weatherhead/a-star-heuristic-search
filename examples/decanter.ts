@@ -4,7 +4,7 @@ import { zeroPadNumber } from 'thaw-common-utilities.ts';
 
 import { AStarStateBase, ISuccessorStateGenerator } from '..';
 
-export class DecanterState extends AStarStateBase {
+export class DecanterState extends AStarStateBase<DecanterState> {
 	public static create(v1: number, v2: number): DecanterState {
 		return new DecanterState(v1, v2, undefined, '', 0, 0);
 	}
