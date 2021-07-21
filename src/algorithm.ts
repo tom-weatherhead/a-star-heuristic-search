@@ -52,23 +52,23 @@ export class AStarAlgorithm<T extends AStarStateBase>
 	private readonly openQueue = new PriorityQueue<T>(
 		(item1: T, item2: T) => item1.compareTo(item2) > 0
 	);
-	private readonly openSet = new Set<T>(); // Used to speed up the refreshing of the Open Queue
+	// private readonly openSet = new Set<T>(); // Used to speed up the refreshing of the Open Queue
 	private readonly openMap = new Map<string, T>();
 	private readonly closedSet = new Set<T>();
 	private readonly closedMap = new Map<string, T>();
-	private readonly successorStateGenerator: ISuccessorStateGenerator<T>;
 
 	constructor(
-		successorStateGenerator: ISuccessorStateGenerator<T>,
+		private readonly successorStateGenerator: ISuccessorStateGenerator<T>,
 		private readonly options: IAStarAlgorithmOptions = {}
 	) {
-		this.successorStateGenerator = successorStateGenerator;
+		// this.successorStateGenerator = successorStateGenerator;
 	}
 
 	public refreshPriorityQueue(state: AStarStateBase): void {
 		const castState = state as T;
 
-		if (typeof castState !== 'undefined' && this.openSet.contains(castState)) {
+		// if (typeof castState !== 'undefined' && this.openSet.contains(castState)) {
+		if (typeof castState !== 'undefined' && this.openQueue.contains(castState)) {
 			this.openQueue.findAndUpHeap(castState, (state1: T, state2: T) =>
 				state1.equals(state2)
 			);
@@ -91,13 +91,13 @@ export class AStarAlgorithm<T extends AStarStateBase>
 		this.successorStateGenerator.stateValidityTest(goalState);
 
 		this.openQueue.clear();
-		this.openSet.clear();
+		// this.openSet.clear();
 		this.openMap.clear();
 		this.closedSet.clear();
 		this.closedMap.clear();
 
 		this.openQueue.enqueue(startState);
-		this.openSet.add(startState);
+		// this.openSet.add(startState);
 
 		if (this.options.useStringStates) {
 			this.openMap.set(startState.toString(), startState);
@@ -108,7 +108,7 @@ export class AStarAlgorithm<T extends AStarStateBase>
 
 			// console.log(`currentState: ${currentState}`);
 
-			this.openSet.remove(currentState);
+			// this.openSet.remove(currentState);
 			this.openMap.delete(currentState.toString());
 			this.closedSet.add(currentState);
 
@@ -144,7 +144,7 @@ export class AStarAlgorithm<T extends AStarStateBase>
 				} else {
 					newState.traverseAndOptimizeCosts(currentState, newStateCost, undefined);
 					this.openQueue.enqueue(newState);
-					this.openSet.add(newState);
+					// this.openSet.add(newState);
 
 					if (this.options.useStringStates) {
 						this.openMap.set(newState.toString(), newState);
